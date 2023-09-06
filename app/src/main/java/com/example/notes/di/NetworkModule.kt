@@ -1,4 +1,4 @@
-package com.example.notes
+package com.example.notes.di
 
 import com.example.notes.api.UserApi
 import com.example.notes.utlls.Constants.BASE_URL

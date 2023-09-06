@@ -1,6 +1,5 @@
 package com.example.notes.uicomponents
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -181,7 +180,7 @@ fun AnnotatedText(
     val annotatedString = buildAnnotatedString {
         append(normalText)
         append(" ")
-        withStyle(style = SpanStyle(color = Color.Blue)) {
+        withStyle(style = SpanStyle(color = colorResource(id = R.color.hyperText))) {
             pushStringAnnotation(tag = hyperText, annotation = hyperText)
             append(hyperText)
         }

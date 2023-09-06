@@ -1,12 +1,15 @@
 package com.example.notes.screens
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -43,7 +46,7 @@ fun LoginScreen(navigationController: NavHostController) {
         PasswordTextField(onValueChanged = {})
         Spacer(value = 50.dp)
         ButtonComp(text = stringResource(id = R.string.login)) {
-
+            navigationController.navigate(Screen.MainScreen.route)
         }
         Spacer(value = 20.dp)
         AnnotatedText(
