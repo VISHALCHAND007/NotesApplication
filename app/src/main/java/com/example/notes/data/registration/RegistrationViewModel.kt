@@ -13,6 +13,7 @@ class RegistrationViewModel @Inject constructor(private val authViewModel: AuthV
     val allValidationsChecked = mutableStateOf(false)
 
     fun onEvent(event: RegistrationUIEvents) {
+        validateDataWithRules()
         when (event) {
             is RegistrationUIEvents.OnUsernameChanged -> {
                 registrationUIState.value = registrationUIState.value.copy(
@@ -44,7 +45,7 @@ class RegistrationViewModel @Inject constructor(private val authViewModel: AuthV
         }
     }
 
-    fun validateDataWithRules() {
+    private fun validateDataWithRules() {
         val username = Validator.validateUsername(registrationUIState.value.username)
         val email = Validator.validateEmail(registrationUIState.value.email)
         val password = Validator.validatePassword(registrationUIState.value.password)
