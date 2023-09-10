@@ -16,6 +16,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
     val allValidationChecked = mutableStateOf(false)
 
     fun onEvent(event: LoginUIEvents) {
+        validateDataWithRules()
         when(event) {
             is LoginUIEvents.OnEmailChanged -> {
                 loginUIState.value = loginUIState.value.copy(
