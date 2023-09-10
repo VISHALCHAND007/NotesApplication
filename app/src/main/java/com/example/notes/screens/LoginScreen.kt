@@ -1,12 +1,17 @@
 package com.example.notes.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -30,47 +35,60 @@ fun LoginScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 80.dp, end = 15.dp, start = 15.dp)
-            .verticalScroll(state = scrollState, enabled = true)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        BoldText(text = stringResource(id = R.string.welcome))
-        NormalText(text = stringResource(id = R.string.login_to_access))
-        Spacer(value = 50.dp)
-        HeadingText(text = stringResource(id = R.string.email))
-        Spacer()
-        MyTextField(
-            onValueChanged = {
-                loginViewModel.onEvent(LoginUIEvents.OnEmailChanged(it))
-            },
-            errorStatus = loginViewModel.loginUIState.value.emailError
-        )
-        Spacer()
-        HeadingText(text = stringResource(id = R.string.passwordA))
-        Spacer()
-        PasswordTextField(
-            onValueChanged = {
-                loginViewModel.onEvent(LoginUIEvents.OnPasswordChanged(it))
-            },
-            errorStatus = loginViewModel.loginUIState.value.passwordError
-        )
-        Spacer(value = 50.dp)
-        ButtonComp(text = stringResource(id = R.string.login),
-            isEnabled = loginViewModel.allValidationChecked.value,
-            onButtonClicked = {
-                loginViewModel.onEvent(LoginUIEvents.OnLoginBtnClicked)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 80.dp, end = 15.dp, start = 15.dp)
+                .verticalScroll(state = scrollState, enabled = true)
+        ) {
+            BoldText(text = stringResource(id = R.string.welcome))
+            NormalText(text = stringResource(id = R.string.login_to_access))
+            Spacer(value = 50.dp)
+            HeadingText(text = stringResource(id = R.string.email))
+            Spacer()
+            MyTextField(
+                onValueChanged = {
+                    loginViewModel.onEvent(LoginUIEvents.OnEmailChanged(it))
+                },
+                errorStatus = loginViewModel.loginUIState.value.emailError
+            )
+            Spacer()
+            HeadingText(text = stringResource(id = R.string.passwordA))
+            Spacer()
+            PasswordTextField(
+                onValueChanged = {
+                    loginViewModel.onEvent(LoginUIEvents.OnPasswordChanged(it))
+                },
+                errorStatus = loginViewModel.loginUIState.value.passwordError
+            )
+            Spacer()
+            NormalText(
+                text = "",
+                color = Color.Red
+            )
+            Spacer(value = 50.dp)
+            ButtonComp(text = stringResource(id = R.string.login),
+                isEnabled = loginViewModel.allValidationChecked.value,
+                onButtonClicked = {
+                    loginViewModel.onEvent(LoginUIEvents.OnLoginBtnClicked)
 //                navigationController.navigate(Screen.MainScreen.route)
-            })
-        Spacer(value = 20.dp)
-        AnnotatedText(
-            normalText = stringResource(id = R.string.dont_have_an_account),
-            hyperText = stringResource(id = R.string.register),
-            onHyperTextClicked = {
-                if (it.lowercase().contains("register")) {
-                    navigationController.navigate(Screen.RegistrationScreen.route)
-                }
-            })
+                })
+            Spacer(value = 20.dp)
+            AnnotatedText(
+                normalText = stringResource(id = R.string.dont_have_an_account),
+                hyperText = stringResource(id = R.string.register),
+                onHyperTextClicked = {
+                    if (it.lowercase().contains("register")) {
+                        navigationController.navigate(Screen.RegistrationScreen.route)
+                    }
+                })
+        }
+        if (loginViewModel.isLoading.value) {
+            CircularProgressIndicator()
+        }
     }
 }

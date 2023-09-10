@@ -15,6 +15,7 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
     ViewModel() {
     val registrationUIState = mutableStateOf(RegistrationUIState())
     val allValidationsChecked = mutableStateOf(false)
+    var isLoading = mutableStateOf(false)
 
     fun onEvent(event: RegistrationUIEvents) {
         validateDataWithRules()
@@ -48,7 +49,9 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
             }
         }
     }
+
     private fun registerUser(userRequest: UserRequest) {
+        isLoading.value = true
         viewModelScope.launch {
             userRepository.registerUser(userRequest)
         }

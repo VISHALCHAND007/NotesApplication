@@ -53,7 +53,8 @@ fun BoldText(
 
 @Composable
 fun NormalText(
-    text: String
+    text: String,
+    color: Color = colorResource(id = R.color.lightGray)
 ) {
     Text(
         text = text,
@@ -61,7 +62,7 @@ fun NormalText(
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 16.sp,
-            color = colorResource(id = R.color.lightGray),
+            color = color,
             fontWeight = FontWeight.Normal
         )
     )

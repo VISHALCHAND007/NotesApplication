@@ -14,6 +14,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
     val loginUIState = mutableStateOf(LoginUIState())
     val allValidationChecked = mutableStateOf(false)
+    var isLoading = mutableStateOf(false)
 
     fun onEvent(event: LoginUIEvents) {
         validateDataWithRules()
@@ -40,6 +41,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
         }
     }
     private fun loginUser(userRequest: UserRequest) {
+        isLoading.value = true
         viewModelScope.launch {
             userRepository.loginUser(userRequest)
         }
