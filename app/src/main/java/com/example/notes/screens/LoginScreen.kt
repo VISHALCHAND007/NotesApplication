@@ -45,15 +45,17 @@ fun LoginScreen(navigationController: NavHostController) {
         Spacer()
         PasswordTextField(onValueChanged = {})
         Spacer(value = 50.dp)
-        ButtonComp(text = stringResource(id = R.string.login)) {
-            navigationController.navigate(Screen.MainScreen.route)
-        }
+        ButtonComp(text = stringResource(id = R.string.login),
+            onButtonClicked = {
+                navigationController.navigate(Screen.MainScreen.route)
+
+            })
         Spacer(value = 20.dp)
         AnnotatedText(
             normalText = stringResource(id = R.string.dont_have_an_account),
             hyperText = stringResource(id = R.string.register),
             onHyperTextClicked = {
-                if(it.lowercase().contains("register")) {
+                if (it.lowercase().contains("register")) {
                     navigationController.navigate(Screen.RegistrationScreen.route)
                 }
             })

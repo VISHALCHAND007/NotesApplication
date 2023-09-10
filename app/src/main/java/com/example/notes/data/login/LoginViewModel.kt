@@ -2,12 +2,16 @@ package com.example.notes.data.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.notes.data.rules.Validator
 import com.example.notes.models.UserRequest
-import com.example.notes.viewmodel.AuthViewModel
+import com.example.notes.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(private val authViewModel: AuthViewModel) : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
     val loginUIState = mutableStateOf(LoginUIState())
     val allValidationChecked = mutableStateOf(false)
 
@@ -24,14 +28,19 @@ class LoginViewModel @Inject constructor(private val authViewModel: AuthViewMode
                 )
             }
             is LoginUIEvents.OnLoginBtnClicked -> {
-                authViewModel.loginUser(
+                loginUser(
                     UserRequest(
                         email = loginUIState.value.email,
-                        password = loginUIState.value.password ,
+                        password = loginUIState.value.password,
                         username = ""
                     )
                 )
             }
+        }
+    }
+    private fun loginUser(userRequest: UserRequest) {
+        viewModelScope.launch {
+            userRepository.loginUser(userRequest)
         }
     }
     private fun validateDataWithRules() {

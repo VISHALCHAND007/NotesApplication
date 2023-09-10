@@ -2,12 +2,16 @@ package com.example.notes.data.registration
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.notes.data.rules.Validator
 import com.example.notes.models.UserRequest
-import com.example.notes.viewmodel.AuthViewModel
+import com.example.notes.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class RegistrationViewModel @Inject constructor(private val authViewModel: AuthViewModel) :
+@HiltViewModel
+class RegistrationViewModel @Inject constructor(private val userRepository: UserRepository) :
     ViewModel() {
     val registrationUIState = mutableStateOf(RegistrationUIState())
     val allValidationsChecked = mutableStateOf(false)
@@ -34,7 +38,7 @@ class RegistrationViewModel @Inject constructor(private val authViewModel: AuthV
             }
 
             is RegistrationUIEvents.OnSignUpBtnClicked -> {
-                authViewModel.registerUser(
+                registerUser(
                     UserRequest(
                         username = registrationUIState.value.username,
                         email = registrationUIState.value.email,
@@ -42,6 +46,11 @@ class RegistrationViewModel @Inject constructor(private val authViewModel: AuthV
                     )
                 )
             }
+        }
+    }
+    private fun registerUser(userRequest: UserRequest) {
+        viewModelScope.launch {
+            userRepository.registerUser(userRequest)
         }
     }
 

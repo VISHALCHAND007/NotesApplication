@@ -1,11 +1,7 @@
 package com.example.notes.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.window.isPopupLayout
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.navigation.NavHostController
-import androidx.navigation.PopUpToBuilder
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,11 +16,10 @@ fun Navigation() {
     NavHost(navController = navigationController, startDestination = Screen.RegistrationScreen.route) {
         composable(route = Screen.LoginScreen.route) {
             LoginScreen(navigationController)
-
         }
         composable(route = Screen.RegistrationScreen.route) {
-//            val registrationViewModel = viewModel<RegistrationViewModel>()
-            RegistrationScreen(navigationController)
+            val registrationViewModel = hiltViewModel<RegistrationViewModel>()
+            RegistrationScreen(navigationController, registrationViewModel)
         }
         composable(route = Screen.MainScreen.route) {
             MainScreen(navigationController)

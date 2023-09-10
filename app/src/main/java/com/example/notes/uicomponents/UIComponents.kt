@@ -155,7 +155,8 @@ fun PasswordTextField(
 @Composable
 fun ButtonComp(
     text: String,
-    onButtonClicked: () -> Unit
+    onButtonClicked: () -> Unit,
+    isEnabled: Boolean = false
 ) {
     Button(
         modifier = Modifier
@@ -164,6 +165,7 @@ fun ButtonComp(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black
         ),
+        enabled = isEnabled,
         onClick = {
             onButtonClicked()
         }) {

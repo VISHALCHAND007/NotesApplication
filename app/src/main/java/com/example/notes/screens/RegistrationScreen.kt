@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.notes.R
 import com.example.notes.data.registration.RegistrationUIEvents
@@ -27,7 +26,7 @@ import com.example.notes.uicomponents.Spacer
 @Composable
 fun RegistrationScreen(
     navigationController: NavHostController,
-    registrationViewModel: RegistrationViewModel = viewModel()
+    registrationViewModel: RegistrationViewModel,
 ) {
     val scrollState = rememberScrollState()
 
@@ -67,9 +66,14 @@ fun RegistrationScreen(
             errorStatus = registrationViewModel.registrationUIState.value.passwordError
         )
         Spacer(value = 50.dp)
-        ButtonComp(text = stringResource(id = R.string.sign_up)) {
-            registrationViewModel.onEvent(event = RegistrationUIEvents.OnSignUpBtnClicked)
-        }
+        ButtonComp(
+            text = stringResource(id = R.string.sign_up),
+            isEnabled = registrationViewModel.allValidationsChecked.value,
+            onButtonClicked = {
+                registrationViewModel.onEvent(event = RegistrationUIEvents.OnSignUpBtnClicked)
+            }
+        )
+
         Spacer(value = 20.dp)
         AnnotatedText(
             normalText = stringResource(id = R.string.already_have_account),
