@@ -11,6 +11,7 @@ import com.example.notes.models.UserResponse
 import com.example.notes.navigation.Screen
 import com.example.notes.repository.UserRepository
 import com.example.notes.utlls.NetworkResult
+import com.example.notes.utlls.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +25,8 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
     var errorMessage = mutableStateOf("")
     val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = userRepository.userResponseLiveData
+    @Inject
+        lateinit var tokenManager: TokenManager
 
     fun onEvent(event: RegistrationUIEvents) {
         validateDataWithRules()
@@ -56,6 +59,12 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
                     event.navigationController
                 )
             }
+            is RegistrationUIEvents.CheckUserLogin -> {
+                val token = tokenManager.getToken()
+                if(token != null) {
+                    event.navigationController.navigate(Screen.MainScreen.route)
+                }
+            }
         }
     }
 
@@ -67,6 +76,7 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
             isLoading.value  = false
             when (networkResult) {
                 is NetworkResult.Success -> {
+                    tokenManager.saveToken(networkResult.data!!.token)
                     navigationController.navigate(Screen.MainScreen.route)
                 }
                 is NetworkResult.Error -> {

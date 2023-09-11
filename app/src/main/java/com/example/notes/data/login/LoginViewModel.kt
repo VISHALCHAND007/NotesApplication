@@ -12,6 +12,7 @@ import com.example.notes.models.UserResponse
 import com.example.notes.navigation.Screen
 import com.example.notes.repository.UserRepository
 import com.example.notes.utlls.NetworkResult
+import com.example.notes.utlls.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +23,8 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
     val allValidationChecked = mutableStateOf(false)
     var isLoading = mutableStateOf(false)
     var errorMessage = mutableStateOf("")
+    @Inject
+    lateinit var tokenManager: TokenManager
 
     val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = userRepository.userResponseLiveData
@@ -62,6 +65,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
             isLoading.value = false
             when(networkResult) {
                 is NetworkResult.Success -> {
+                    tokenManager.saveToken(networkResult.data!!.token)
                     navController.navigate(Screen.MainScreen.route)
                 }
                 is NetworkResult.Error -> {
