@@ -19,8 +19,8 @@ import javax.inject.Singleton
 class NetworkModule {
     @Provides
     @Singleton
-    fun providesRetrofitBuilder(): Retrofit.Builder {
-        return Retrofit.Builder()
+    fun providesRetrofitBuilder(): Builder {
+        return Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
     }
@@ -33,14 +33,15 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun providesUserAPI(retrofitBuilder: Retrofit.Builder): UserApi {
+    fun providesUserAPI(retrofitBuilder: Builder): UserApi {
         return retrofitBuilder.build().create(UserApi::class.java)
     }
 
+    @Provides
+    @Singleton
     fun providesNotesAPI(retrofitBuilder: Builder, okHttpClient: OkHttpClient): NotesApi {
         return retrofitBuilder
             .client(okHttpClient)
             .build().create(NotesApi::class.java)
-
     }
 }

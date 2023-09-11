@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="lightGray">#C6C5C5</color>
     <color name="hyperText">#2196F3</color>
+    <color name="backgroundGray">#F6F6F6</color>
+    <color name="background">#EFF5F5</color>
 </resources>

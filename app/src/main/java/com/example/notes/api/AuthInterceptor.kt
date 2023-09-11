@@ -1,11 +1,13 @@
 package com.example.notes.api
 
+import android.util.Log
+import com.example.notes.utlls.Constants.TAG
 import com.example.notes.utlls.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class AuthInterceptor : Interceptor {
+class AuthInterceptor @Inject constructor() : Interceptor {
 
     @Inject
     lateinit var tokenManager: TokenManager
@@ -13,7 +15,7 @@ class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
         val token = tokenManager.getToken()
-
+//        Log.d(TAG, token.toString())
         request.addHeader("Authorization", "Bearer $token")
         return chain.proceed(request.build())
     }

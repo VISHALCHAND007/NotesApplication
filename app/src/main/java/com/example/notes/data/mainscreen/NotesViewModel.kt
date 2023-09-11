@@ -1,38 +1,95 @@
 package com.example.notes.data.mainscreen
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notes.models.NotesRequest
+import com.example.notes.models.NotesResponse
 import com.example.notes.repository.NotesRepository
+import com.example.notes.utlls.NetworkResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class NotesViewModel @Inject constructor(private val notesRepository: NotesRepository) :
     ViewModel() {
-    val _notesLiveData get() = notesRepository.notesLiveData
-    val _statusLiveData get() = notesRepository.statusLiveData
+    private val _notesLiveData get() = notesRepository.notesLiveData
+    private val _statusLiveData get() = notesRepository.statusLiveData
+    val noteStates = mutableStateOf(NoteStates())
+    var isLoading = mutableStateOf(false)
+    var errorMessage = mutableStateOf("")
 
-    fun getNotes() {
-        viewModelScope.launch {
-            notesRepository.getNotes()
+    fun onEvent(event: NoteUiEvents) {
+        when (event) {
+            is NoteUiEvents.DeleteNote -> {
+                viewModelScope.launch {
+                    notesRepository.deleteNotes(event.noteId)
+//                    isLoading.value = false
+                    _statusLiveData.observeForever {
+                        handleResponse(it)
+                    }
+                }
+            }
+
+            is NoteUiEvents.GetNotes -> {
+                viewModelScope.launch {
+                    notesRepository.getNotes()
+                    _notesLiveData.observeForever { networkResult ->
+                        isLoading.value = false
+                        when (networkResult) {
+                            is NetworkResult.Error -> {
+                                errorMessage.value = networkResult.message!!
+                            }
+
+                            is NetworkResult.Loading -> {
+                                isLoading.value = true
+                            }
+
+                            is NetworkResult.Success -> {
+                                noteStates.value.data = networkResult.data ?: emptyList()
+                            }
+                        }
+                    }
+                }
+            }
+
+            is NoteUiEvents.InsertNote -> {
+                viewModelScope.launch {
+                    notesRepository.insertNotes(event.notesRequest)
+//                    isLoading.value = false
+                    _statusLiveData.observeForever { networkResult ->
+                        handleResponse(networkResult)
+                    }
+                }
+            }
+
+            is NoteUiEvents.UpdateNote -> {
+                viewModelScope.launch {
+//                    isLoading.value = false
+                    notesRepository.updateNotes(event.noteId, event.notesRequest)
+                    _statusLiveData.observeForever {
+                        handleResponse(it)
+                    }
+                }
+            }
         }
     }
 
-    fun insertNote(notesRequest: NotesRequest) {
-        viewModelScope.launch {
-            notesRepository.insertNotes(notesRequest)
-        }
-    }
+    private fun handleResponse(networkResult: NetworkResult<String>) {
+        isLoading.value = false
+        when (networkResult) {
+            is NetworkResult.Error -> {
+                errorMessage.value = networkResult.message!!
+            }
 
-    fun deleteNote(noteId: String) {
-        viewModelScope.launch {
-            notesRepository.deleteNotes(noteId)
-        }
-    }
+            is NetworkResult.Loading -> {
+                isLoading.value = true
+            }
 
-    fun updateNote(noteId: String, notesRequest: NotesRequest) {
-        viewModelScope.launch {
-            notesRepository.updateNotes(noteId, notesRequest)
+            is NetworkResult.Success -> {
+//                Log.d(TAG, networkResult.message.toString())
+            }
         }
     }
 }
