@@ -29,7 +29,6 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
     }
 
     private fun handleResponse(response: Response<UserResponse>) {
-        Log.d(TAG, response.toString())
         if (response.isSuccessful && response.body() != null) {
             _userResponseLiveData.postValue(NetworkResult.Success(response.body()!!))
         } else if (response.errorBody() != null) {

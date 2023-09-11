@@ -17,4 +17,7 @@
     <string name="already_have_account">Already have an account?</string>
     <string name="welcome">Welcome Back!</string>
     <string name="login_to_access">Login to access your notes</string>
+    <string name="note_inserted">Note inserted</string>
+    <string name="note_deleted">Note deleted</string>
+    <string name="note_updated">Note updated</string>
 </resources>

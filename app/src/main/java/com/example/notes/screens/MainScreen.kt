@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun MainScreen(navigationController: NavHostController) {
+
     val context = LocalContext.current
     val activity : Activity? = remember(context) {
         context as? Activity

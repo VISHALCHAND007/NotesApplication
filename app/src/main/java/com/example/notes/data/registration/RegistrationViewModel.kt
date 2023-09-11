@@ -23,7 +23,7 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
     val allValidationsChecked = mutableStateOf(false)
     var isLoading = mutableStateOf(false)
     var errorMessage = mutableStateOf("")
-    val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
+    private val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = userRepository.userResponseLiveData
     @Inject
         lateinit var tokenManager: TokenManager

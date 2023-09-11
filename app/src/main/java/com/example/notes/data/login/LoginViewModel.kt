@@ -26,7 +26,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
     @Inject
     lateinit var tokenManager: TokenManager
 
-    val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
+    private val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = userRepository.userResponseLiveData
 
     fun onEvent(event: LoginUIEvents) {
