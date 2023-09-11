@@ -67,15 +67,14 @@ fun LoginScreen(
             )
             Spacer()
             NormalText(
-                text = "",
-                color = Color.Red
+                text = loginViewModel.errorMessage.value,
+                color = Color.Blue
             )
             Spacer(value = 50.dp)
             ButtonComp(text = stringResource(id = R.string.login),
                 isEnabled = loginViewModel.allValidationChecked.value,
                 onButtonClicked = {
-                    loginViewModel.onEvent(LoginUIEvents.OnLoginBtnClicked)
-//                navigationController.navigate(Screen.MainScreen.route)
+                    loginViewModel.onEvent(LoginUIEvents.OnLoginBtnClicked(navHostController = navigationController))
                 })
             Spacer(value = 20.dp)
             AnnotatedText(
@@ -83,7 +82,8 @@ fun LoginScreen(
                 hyperText = stringResource(id = R.string.register),
                 onHyperTextClicked = {
                     if (it.lowercase().contains("register")) {
-                        navigationController.navigate(Screen.RegistrationScreen.route)
+                        //to pop the top most element
+                        navigationController.popBackStack()
                     }
                 })
         }

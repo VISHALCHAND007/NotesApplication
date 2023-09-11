@@ -1,11 +1,16 @@
 package com.example.notes.data.registration
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.example.notes.data.rules.Validator
 import com.example.notes.models.UserRequest
+import com.example.notes.models.UserResponse
+import com.example.notes.navigation.Screen
 import com.example.notes.repository.UserRepository
+import com.example.notes.utlls.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,6 +21,9 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
     val registrationUIState = mutableStateOf(RegistrationUIState())
     val allValidationsChecked = mutableStateOf(false)
     var isLoading = mutableStateOf(false)
+    var errorMessage = mutableStateOf("")
+    val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
+        get() = userRepository.userResponseLiveData
 
     fun onEvent(event: RegistrationUIEvents) {
         validateDataWithRules()
@@ -44,16 +52,30 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
                         username = registrationUIState.value.username,
                         email = registrationUIState.value.email,
                         password = registrationUIState.value.password
-                    )
+                    ),
+                    event.navigationController
                 )
             }
         }
     }
 
-    private fun registerUser(userRequest: UserRequest) {
-        isLoading.value = true
+    private fun registerUser(userRequest: UserRequest, navigationController: NavHostController) {
         viewModelScope.launch {
             userRepository.registerUser(userRequest)
+        }
+        userResponseLiveData.observeForever { networkResult ->
+            isLoading.value  = false
+            when (networkResult) {
+                is NetworkResult.Success -> {
+                    navigationController.navigate(Screen.MainScreen.route)
+                }
+                is NetworkResult.Error -> {
+                    errorMessage.value = networkResult.message!!
+                }
+                is NetworkResult.Loading -> {
+                    isLoading.value = true
+                }
+            }
         }
     }
 

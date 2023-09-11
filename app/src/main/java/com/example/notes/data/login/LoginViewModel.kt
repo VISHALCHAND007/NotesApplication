@@ -1,11 +1,17 @@
 package com.example.notes.data.login
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.notes.data.rules.Validator
 import com.example.notes.models.UserRequest
+import com.example.notes.models.UserResponse
+import com.example.notes.navigation.Screen
 import com.example.notes.repository.UserRepository
+import com.example.notes.utlls.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,37 +21,59 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
     val loginUIState = mutableStateOf(LoginUIState())
     val allValidationChecked = mutableStateOf(false)
     var isLoading = mutableStateOf(false)
+    var errorMessage = mutableStateOf("")
+
+    val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
+        get() = userRepository.userResponseLiveData
 
     fun onEvent(event: LoginUIEvents) {
         validateDataWithRules()
-        when(event) {
+        when (event) {
             is LoginUIEvents.OnEmailChanged -> {
                 loginUIState.value = loginUIState.value.copy(
                     email = event.email
                 )
             }
+
             is LoginUIEvents.OnPasswordChanged -> {
                 loginUIState.value = loginUIState.value.copy(
                     password = event.password
                 )
             }
+
             is LoginUIEvents.OnLoginBtnClicked -> {
                 loginUser(
                     UserRequest(
                         email = loginUIState.value.email,
                         password = loginUIState.value.password,
                         username = ""
-                    )
+                    ),
+                    navController = event.navHostController
                 )
             }
         }
     }
-    private fun loginUser(userRequest: UserRequest) {
-        isLoading.value = true
+
+    private fun loginUser(userRequest: UserRequest, navController: NavHostController) {
         viewModelScope.launch {
             userRepository.loginUser(userRequest)
         }
+        userResponseLiveData.observeForever {networkResult ->
+            isLoading.value = false
+            when(networkResult) {
+                is NetworkResult.Success -> {
+                    navController.navigate(Screen.MainScreen.route)
+                }
+                is NetworkResult.Error -> {
+                    errorMessage.value = networkResult.message!!
+                }
+                is NetworkResult.Loading -> {
+                    isLoading.value = true
+                }
+            }
+        }
     }
+
     private fun validateDataWithRules() {
         val email = Validator.validateEmail(loginUIState.value.email)
         val password = Validator.validatePassword(loginUIState.value.password)

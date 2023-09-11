@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import com.example.notes.R
 import com.example.notes.data.registration.RegistrationUIEvents
@@ -75,15 +76,15 @@ fun RegistrationScreen(
             )
             Spacer()
             NormalText(
-                text = "",
-                color = Color.Red
+                text = registrationViewModel.errorMessage.value,
+                color = Color.Blue
             )
             Spacer(value = 50.dp)
             ButtonComp(
                 text = stringResource(id = R.string.sign_up),
                 isEnabled = registrationViewModel.allValidationsChecked.value,
                 onButtonClicked = {
-                    registrationViewModel.onEvent(event = RegistrationUIEvents.OnSignUpBtnClicked)
+                    registrationViewModel.onEvent(event = RegistrationUIEvents.OnSignUpBtnClicked(navigationController))
                 }
             )
 
