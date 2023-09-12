@@ -33,7 +33,7 @@ fun Navigation() {
             )
         }
         composable(route = Screen.MainScreen.route) {
-            MainScreen(navigationController)
+            MainScreen()
         }
     }
 }

@@ -25,7 +25,7 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
             is NoteUiEvents.DeleteNote -> {
                 viewModelScope.launch {
                     notesRepository.deleteNotes(event.noteId)
-//                    isLoading.value = false
+                    isLoading.value = false
                     _statusLiveData.observeForever {
                         handleResponse(it)
                     }
@@ -41,12 +41,12 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
                             is NetworkResult.Error -> {
                                 errorMessage.value = networkResult.message!!
                             }
-
                             is NetworkResult.Loading -> {
                                 isLoading.value = true
                             }
 
                             is NetworkResult.Success -> {
+                                Log.d("here123", networkResult.data.toString())
                                 noteStates.value.data = networkResult.data ?: emptyList()
                             }
                         }
@@ -57,7 +57,7 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
             is NoteUiEvents.InsertNote -> {
                 viewModelScope.launch {
                     notesRepository.insertNotes(event.notesRequest)
-//                    isLoading.value = false
+                    isLoading.value = false
                     _statusLiveData.observeForever { networkResult ->
                         handleResponse(networkResult)
                     }
@@ -66,7 +66,7 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
 
             is NoteUiEvents.UpdateNote -> {
                 viewModelScope.launch {
-//                    isLoading.value = false
+                    isLoading.value = false
                     notesRepository.updateNotes(event.noteId, event.notesRequest)
                     _statusLiveData.observeForever {
                         handleResponse(it)

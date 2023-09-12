@@ -1,8 +1,13 @@
 package com.example.notes.uicomponents
 
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -45,8 +53,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notes.R
 import com.example.notes.models.NotesResponse
+import com.example.notes.utlls.Constants.TAG
 
 @Composable
 fun BoldText(
@@ -270,7 +280,9 @@ fun AppSearchBar(
 @Composable
 fun EachRowComposable(
     notesResponse: NotesResponse,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteBtnClicked: (noteId: String) -> Unit,
+    onNoteClicked: (noteResponse: NotesResponse) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -278,7 +290,9 @@ fun EachRowComposable(
             .background(
                 color = colorResource(id = R.color.lightGray),
                 shape = RoundedCornerShape(10.dp)
-            )
+            ).clickable {
+                onNoteClicked(notesResponse)
+            }
     ) {
         Column(
             modifier = Modifier.padding(15.dp)
@@ -297,7 +311,9 @@ fun EachRowComposable(
                     ),
                     modifier = Modifier.weight(.7f)
                 )
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = {
+                    onDeleteBtnClicked(notesResponse._id)
+                }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete Button",
@@ -324,4 +340,96 @@ fun EachRowComposable(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OutlinedTextField(
+    text: String,
+    modifier: Modifier = Modifier,
+    placeholder: String,
+    onValueChanged: (String) -> Unit
+) {
+    androidx.compose.material3.OutlinedTextField(
+        value = text,
+        onValueChange = onValueChanged,
+        modifier = modifier
+            .fillMaxWidth(),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = Color.Transparent,
+        ),
+        label = {
+            Text(text = placeholder)
+        }
+    )
+}
+
+@Composable
+fun ShowDialogBox(
+    title: String,
+    description: String,
+    onTitleChanged: (String) -> Unit,
+    onDescriptionChanged: (String) -> Unit,
+    onButtonClicked: () -> Unit,
+    onClose: () -> Unit,
+    isSaveBtnEnabled: Boolean = false
+) {
+    AlertDialog(onDismissRequest = {
+
+    },
+        confirmButton = {
+            Button(
+                enabled = isSaveBtnEnabled,
+                onClick = {
+                    onButtonClicked()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black.copy(alpha = .6f),
+                    contentColor = Color.White
+                ),
+                contentPadding = PaddingValues(vertical = 15.dp)
+            ) {
+                Text(text = "Save")
+            }
+        },
+        title = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(onClick = {
+                    onClose()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close dialog",
+                        tint = Color.Gray
+                    )
+                }
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+            ) {
+                OutlinedTextField(
+                    text = title,
+                    placeholder = "Title",
+                    onValueChanged = onTitleChanged
+                )
+                Spacer()
+                OutlinedTextField(
+                    text = description,
+                    placeholder = "Description",
+                    onValueChanged = onDescriptionChanged,
+                    modifier = Modifier.height(300.dp)
+                )
+            }
+        }
+    )
 }
