@@ -1,7 +1,7 @@
 package com.example.notes.data.mainscreen
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notes.models.NotesResponse
@@ -15,6 +15,8 @@ import javax.inject.Inject
 class NotesViewModel @Inject constructor(private val notesRepository: NotesRepository) :
     ViewModel() {
     private val _notesLiveData get() = notesRepository.notesLiveData
+    private val notesLiveData get() = _notesLiveData
+    private var temp: ArrayList<NotesResponse> = ArrayList()
     private val _statusLiveData get() = notesRepository.statusLiveData
     val noteStates = mutableStateOf(NoteStates())
     var isLoading = mutableStateOf(false)
@@ -41,12 +43,12 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
                             is NetworkResult.Error -> {
                                 errorMessage.value = networkResult.message!!
                             }
+
                             is NetworkResult.Loading -> {
                                 isLoading.value = true
                             }
 
                             is NetworkResult.Success -> {
-                                Log.d("here123", networkResult.data.toString())
                                 noteStates.value.data = networkResult.data ?: emptyList()
                             }
                         }

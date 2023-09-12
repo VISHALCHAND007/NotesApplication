@@ -1,6 +1,7 @@
 package com.example.notes.screens
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -37,10 +38,12 @@ import com.example.notes.R
 import com.example.notes.data.mainscreen.NoteUiEvents
 import com.example.notes.data.mainscreen.NotesViewModel
 import com.example.notes.models.NotesRequest
+import com.example.notes.models.NotesResponse
 import com.example.notes.uicomponents.AppSearchBar
 import com.example.notes.uicomponents.EachRowComposable
 import com.example.notes.uicomponents.ShowDialogBox
 import com.example.notes.uicomponents.Spacer
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -70,9 +73,11 @@ fun MainScreen(
     var noteId by remember {
         mutableStateOf("")
     }
-    viewModel.onEvent(NoteUiEvents.GetNotes)
     LaunchedEffect(key1 = viewModel.noteStates) {
         viewModel.onEvent(NoteUiEvents.GetNotes)
+    }
+    LaunchedEffect(key1 = true) {
+        viewModel.isLoading.value = true
     }
     Scaffold(
         modifier = Modifier
@@ -96,9 +101,13 @@ fun MainScreen(
                 .padding(paddingValues)
                 .background(colorResource(id = R.color.backgroundGray))
         ) {
-            AppSearchBar(search = searchText.value, onValueChanged = {
-                searchText.value = it
-            })
+            AppSearchBar(
+                search = searchText.value,
+                onValueChanged = {
+                    searchText.value = it
+                    Log.e("here345", searchText.value)
+                }
+            )
             if (viewModel.isLoading.value) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -113,14 +122,28 @@ fun MainScreen(
                     verticalItemSpacing = 15.dp,
                     contentPadding = PaddingValues(15.dp)
                 ) {
-                    items(notesResponse.data.size) { it ->
+                    //search logic
+                    val filteredNotes: List<NotesResponse> = if (searchText.value.isEmpty()) {
+                        notesResponse.data
+                    } else {
+                        val resultData: ArrayList<NotesResponse> = arrayListOf()
+                        for (temp in notesResponse.data) {
+                            if (temp.title.lowercase(Locale.getDefault()).contains(searchText.value.lowercase(Locale.getDefault())) ||
+                                temp.description.lowercase(Locale.getDefault()).contains(searchText .value.lowercase(Locale.getDefault()))
+                            ) {
+                                resultData.add(temp)
+                            }
+                        }
+                        resultData
+                    }
+                    items(filteredNotes.size) { it ->
                         EachRowComposable(
                             notesResponse = notesResponse.data[it],
                             onDeleteBtnClicked = { noteId ->
                                 viewModel.onEvent(NoteUiEvents.DeleteNote(noteId))
                                 viewModel.onEvent(NoteUiEvents.GetNotes)
                             },
-                            onNoteClicked = {notesResponse ->
+                            onNoteClicked = { notesResponse ->
                                 //Update Note
                                 title = notesResponse.title
                                 description = notesResponse.description
@@ -143,24 +166,27 @@ fun MainScreen(
                         description = it
                     },
                     onButtonClicked = {
-                       if(needToUpdate) {
-                            viewModel.onEvent(NoteUiEvents.UpdateNote(noteId, NotesRequest(
-                                title = title,
-                                description = description
+                        if (needToUpdate) {
+                            viewModel.onEvent(
+                                NoteUiEvents.UpdateNote(
+                                    noteId, NotesRequest(
+                                        title = title,
+                                        description = description
+                                    )
+                                )
                             )
-                            ))
-                           noteId = ""
-                       } else {
-                           //Save note
-                           viewModel.onEvent(
-                               NoteUiEvents.InsertNote(
-                                   NotesRequest(
-                                       title = title,
-                                       description = description
-                                   )
-                               )
-                           )
-                       }
+                            noteId = ""
+                        } else {
+                            //Save note
+                            viewModel.onEvent(
+                                NoteUiEvents.InsertNote(
+                                    NotesRequest(
+                                        title = title,
+                                        description = description
+                                    )
+                                )
+                            )
+                        }
                         isAddDialog = false
                         needToUpdate = false
                         title = ""

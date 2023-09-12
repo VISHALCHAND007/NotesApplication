@@ -1,6 +1,7 @@
 package com.example.notes.data.mainscreen
 
 import com.example.notes.models.NotesRequest
+import com.example.notes.models.NotesResponse
 
 sealed class NoteUiEvents {
     object GetNotes: NoteUiEvents()
