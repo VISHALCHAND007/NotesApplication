@@ -10,14 +10,18 @@ import com.example.notes.data.registration.RegistrationViewModel
 import com.example.notes.screens.LoginScreen
 import com.example.notes.screens.MainScreen
 import com.example.notes.screens.RegistrationScreen
+import com.example.notes.screens.SplashScreen
 
 @Composable
 fun Navigation() {
     val navigationController = rememberNavController()
     NavHost(
         navController = navigationController,
-        startDestination = Screen.RegistrationScreen.route
+        startDestination = Screen.SplashScreen.route
     ) {
+        composable(route = Screen.SplashScreen.route) {
+            SplashScreen(navigationController)
+        }
         composable(route = Screen.LoginScreen.route) {
             val loginViewModel = hiltViewModel<LoginViewModel>()
             LoginScreen(

@@ -1,7 +1,6 @@
 package com.example.notes.screens
 
 import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -12,9 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
@@ -45,14 +41,12 @@ import com.example.notes.uicomponents.AppSearchBar
 import com.example.notes.uicomponents.EachRowComposable
 import com.example.notes.uicomponents.ShowDialogBox
 import com.example.notes.uicomponents.Spacer
-import com.example.notes.utlls.Constants.TAG
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
     viewModel: NotesViewModel = hiltViewModel()
 ) {
-
     val context = LocalContext.current
     val notesResponse = viewModel.noteStates.value
     val activity: Activity? = remember(context) {
@@ -78,7 +72,7 @@ fun MainScreen(
     }
     viewModel.onEvent(NoteUiEvents.GetNotes)
     LaunchedEffect(key1 = viewModel.noteStates) {
-//        viewModel.onEvent(NoteUiEvents.GetNotes)
+        viewModel.onEvent(NoteUiEvents.GetNotes)
     }
     Scaffold(
         modifier = Modifier
@@ -153,7 +147,8 @@ fun MainScreen(
                             viewModel.onEvent(NoteUiEvents.UpdateNote(noteId, NotesRequest(
                                 title = title,
                                 description = description
-                            )))
+                            )
+                            ))
                            noteId = ""
                        } else {
                            //Save note

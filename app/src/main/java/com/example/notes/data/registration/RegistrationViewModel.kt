@@ -59,12 +59,6 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
                     event.navigationController
                 )
             }
-            is RegistrationUIEvents.CheckUserLogin -> {
-                val token = tokenManager.getToken()
-                if(token != null) {
-                    event.navigationController.navigate(Screen.MainScreen.route)
-                }
-            }
         }
     }
 

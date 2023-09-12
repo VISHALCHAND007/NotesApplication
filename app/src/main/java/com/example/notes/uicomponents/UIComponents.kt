@@ -1,7 +1,9 @@
 package com.example.notes.uicomponents
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -290,7 +293,8 @@ fun EachRowComposable(
             .background(
                 color = colorResource(id = R.color.lightGray),
                 shape = RoundedCornerShape(10.dp)
-            ).clickable {
+            )
+            .clickable {
                 onNoteClicked(notesResponse)
             }
     ) {
@@ -431,5 +435,17 @@ fun ShowDialogBox(
                 )
             }
         }
+    )
+}
+
+@Composable
+fun AppImage(
+    painter: Painter,
+    modifier: Modifier = Modifier
+) {
+    Image(
+        painter = painter,
+        contentDescription = "Icon",
+        modifier = modifier
     )
 }

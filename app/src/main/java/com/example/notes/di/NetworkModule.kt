@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.Retrofit.Builder
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -28,7 +29,12 @@ class NetworkModule {
     @Singleton
     @Provides
     fun providesOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
-        return OkHttpClient().newBuilder().addInterceptor(authInterceptor).build()
+        return OkHttpClient()
+            .newBuilder()
+            .connectTimeout(5, TimeUnit.MINUTES)
+            .readTimeout(5, TimeUnit.MINUTES)
+            .writeTimeout(5, TimeUnit.MINUTES)
+            .addInterceptor(authInterceptor).build()
     }
 
     @Provides
